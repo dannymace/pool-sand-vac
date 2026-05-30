@@ -54,6 +54,7 @@ ght_pitch = 25.4 / 11.5;
 ght_major_d = 26.8;
 ght_minor_d = 25.2;
 ght_thread_depth = 0.8;
+ght_thread_root_overlap = 0.2; // prevents coincident thread-root faces in STL exports
 ght_thread_len = 14.5;
 washer_face_d = 30.5;
 washer_face_t = 3.0;
@@ -176,7 +177,7 @@ module body_shell() {
     }
 }
 
-module thread_helix(major_d, pitch, length, depth) {
+module thread_helix(major_d, pitch, length, depth, root_overlap = 0) {
     slices_per_turn = 28;
 
     linear_extrude(
@@ -185,10 +186,10 @@ module thread_helix(major_d, pitch, length, depth) {
         slices = max(20, ceil(length / pitch) * slices_per_turn),
         convexity = 10
     )
-        translate([(major_d / 2) - depth, 0, 0])
+        translate([(major_d / 2) - depth - root_overlap, 0, 0])
         polygon([
             [0, -pitch * 0.33],
-            [depth, 0],
+            [depth + root_overlap, 0],
             [0, pitch * 0.33]
         ]);
 }
@@ -201,7 +202,8 @@ module male_ght_thread() {
             major_d = ght_major_d,
             pitch = ght_pitch,
             length = ght_thread_len,
-            depth = ght_thread_depth
+            depth = ght_thread_depth,
+            root_overlap = ght_thread_root_overlap
         );
 
         translate([0, 0, ght_thread_len])

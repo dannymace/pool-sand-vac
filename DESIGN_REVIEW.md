@@ -13,11 +13,12 @@ Generated outputs:
 OpenSCAD export:
 
 - OpenSCAD version: `2021.01`
-- Default STL triangles: `22076`
+- Default STL triangles: `17806`
 - Bounding box: about `185.0 mm x 84.8 mm x 79.5 mm`
 - Estimated model volume from STL: about `114.9 cm3`
-- Degenerate triangles: `2` tiny triangles from OpenSCAD tessellation
-- OpenSCAD `--hardwarnings` export completed without warnings
+- Non-manifold edges: `0` in the regenerated STL variants and Bambu 3MF
+- Connected mesh components: `1`
+- OpenSCAD export completed without warnings
 
 Iteration review:
 
@@ -55,6 +56,7 @@ The hose connector is now low and rearward/upward, closer to the original part. 
 Printability review:
 
 - Print with the flat skid on the build plate.
+- Do not use slicer auto-orient if it stands the part upright at about `185 mm` tall. That orientation puts the exhaust path vertical; the intended print orientation is the low `185 x 85 x 79 mm` skid-down footprint.
 - Use PETG, ASA, or ABS. Avoid PLA for hot sun and threaded hose stress.
 - Use at least `5` walls, `6` top/bottom layers, and `40-60%` infill.
 - Avoid internal supports in the slurry path or water jet path.

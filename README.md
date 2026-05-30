@@ -30,6 +30,7 @@ Recommended starting settings:
 - Top/bottom layers: `6+`
 - Infill: `40-60%`
 - Print the `head` with the flat skid on the build plate
+- Do not use slicer auto-orient if it stands the part upright; the intended print orientation is the low `185 x 85 x 79 mm` footprint with the skid down
 - Avoid supports inside the slurry path or water-jet path
 - Use build-plate-only or painted supports only under the external hose boss if your slicer requires them
 
