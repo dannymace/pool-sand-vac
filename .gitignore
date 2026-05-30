@@ -1,0 +1,8 @@
+# Local slicer/cache cruft
+*.gcode
+*.bgcode
+*.log
+
+# OS metadata
+.DS_Store
+Thumbs.db
