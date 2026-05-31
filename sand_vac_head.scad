@@ -15,6 +15,7 @@ part = "head"; // "head", "section", "flow_check"
 // Print and strength settings
 wall = 3.6;
 rim_wall = 4.4;
+bottom_skid_enabled = false;
 
 // Sand pickup and main slurry path
 mouth_opening_major = 76;  // wide enough to avoid bridging in wet sand
@@ -39,10 +40,10 @@ barb_pitch = barb_length / barb_count;
 // rearward/upward so a connected hose naturally exits away from the sand bed.
 hose_junction = [64, 0, 30];
 hose_axis_deg = 76;        // about 14 degrees above the main body axis
-jet_plenum = [70, 0, 0];
+jet_plenum = [74, 0, 0];
 jet_exit_x = 87;
 feed_bore_d = 9.0;
-feed_support_od = 16.8;
+feed_support_od = 15.2;
 jet_body_d = 12.5;
 jet_tip_d = 7.4;
 nozzle_keel_width = 3.2; // printable internal web that supports the center jet
@@ -64,8 +65,26 @@ grip_hex_t = 6;
 
 external_hose_len = washer_face_t + grip_hex_t + ght_thread_len + 8;
 
+feed_curve_steps = 5;
+feed_curve_start = [
+    hose_junction[0] - sin(hose_axis_deg) * 1.4,
+    0,
+    hose_junction[2] - cos(hose_axis_deg) * 1.4
+];
+feed_curve_c1 = [66, 0, 22];
+feed_curve_c2 = [66, 0, 3];
+
 function y_axis_angle(from, to) =
     atan2(to[0] - from[0], to[2] - from[2]);
+
+function bezier_point(p0, p1, p2, p3, t) = [
+    pow(1 - t, 3) * p0[0] + 3 * pow(1 - t, 2) * t * p1[0] + 3 * (1 - t) * pow(t, 2) * p2[0] + pow(t, 3) * p3[0],
+    pow(1 - t, 3) * p0[1] + 3 * pow(1 - t, 2) * t * p1[1] + 3 * (1 - t) * pow(t, 2) * p2[1] + pow(t, 3) * p3[1],
+    pow(1 - t, 3) * p0[2] + 3 * pow(1 - t, 2) * t * p1[2] + 3 * (1 - t) * pow(t, 2) * p2[2] + pow(t, 3) * p3[2]
+];
+
+function feed_curve_point(i) =
+    bezier_point(feed_curve_start, feed_curve_c1, feed_curve_c2, jet_plenum, i / feed_curve_steps);
 
 module x_cylinder(len, d, center = true) {
     rotate([0, 90, 0]) cylinder(h = len, d = d, center = center);
@@ -91,6 +110,29 @@ module y_plane_cylinder(from, to, d) {
     translate(from)
         rotate([0, y_axis_angle(from, to), 0])
         cylinder(h = len, d = d, center = false);
+}
+
+module segment_tube(from, to, d, fn = 48) {
+    len = sqrt(
+        pow(to[0] - from[0], 2) +
+        pow(to[1] - from[1], 2) +
+        pow(to[2] - from[2], 2)
+    );
+
+    translate(from)
+        rotate([0, y_axis_angle(from, to), 0])
+        cylinder(h = len, d = d, center = false, $fn = fn);
+}
+
+module smooth_tube(points, d, fn = 48) {
+    for (i = [0 : len(points) - 2]) {
+        segment_tube(points[i], points[i + 1], d, fn);
+    }
+
+    for (i = [0 : len(points) - 1]) {
+        translate(points[i])
+            sphere(d = d, $fn = fn);
+    }
 }
 
 module hose_axis() {
@@ -147,7 +189,9 @@ module outer_shell() {
             x_taper(diffuser_len, throat_id + (wall * 2), outlet_id + (wall * 2));
 
         barb_profile();
-        flat_print_skid();
+
+        if (bottom_skid_enabled)
+            flat_print_skid();
     }
 }
 
@@ -231,7 +275,10 @@ module hose_connector_outer() {
 
 module venturi_nozzle_outer() {
     union() {
-        y_plane_cylinder(jet_plenum, hose_junction, feed_support_od);
+        smooth_tube(
+            [for (i = [0 : feed_curve_steps]) feed_curve_point(i)],
+            feed_support_od
+        );
 
         translate(hose_junction)
             sphere(d = feed_support_od);
@@ -262,7 +309,10 @@ module water_path_cuts() {
         translate([0, 0, -1])
         cylinder(h = external_hose_len + 11, d = feed_bore_d, center = false);
 
-    y_plane_cylinder(jet_plenum, hose_junction, feed_bore_d);
+    smooth_tube(
+        [for (i = [0 : feed_curve_steps]) feed_curve_point(i)],
+        feed_bore_d
+    );
 
     translate([jet_plenum[0] - 1.8, 0, jet_plenum[2]])
         x_taper(jet_exit_x - jet_plenum[0] - nozzle_straight_len + 1.8, feed_bore_d, nozzle_orifice_d);

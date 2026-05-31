@@ -15,14 +15,14 @@ Encoded intent:
 - Process baseline: `0.20mm Strength @BBL X1C`
 - Nozzle temperature: `255 C` print, `245 C` first layer
 - Textured PEI bed temperature: `70 C`
-- Orientation: narrow center skid on build plate, model centered on X1C bed; expected bounds are about `187 x 85 x 80 mm`
+- Orientation: vertical, large pickup mouth on build plate, exhaust barb upward; expected bounds are about `85 x 78 x 180 mm`
 - Layer height: `0.20 mm`
 - Wall loops: `6`
 - Top layers: `7`
 - Bottom layers: `7`
 - Sparse infill: `45%`
 - Infill pattern: `gyroid`
-- Supports: enabled
+- Supports: disabled
 - Support type: `tree(auto)`
 - Support limit: `build plate only`
 - Support threshold angle: `35 degrees`
@@ -32,10 +32,9 @@ Encoded intent:
 Before printing:
 
 - Open the 3MF in Bambu Studio and slice it once before sending.
-- Do not use Bambu Studio auto-orient for this part. If it stands the part upright at about `187 mm` tall with the exhaust barb vertical, undo that change and return to skid-down orientation.
-- In preview, confirm supports are external, mainly under the garden-hose boss and thread.
-- Do not print if support appears inside the small water nozzle bore or blocks the suction throat.
-- Confirm the internal center jet is connected by the thin lower keel. It should not start as a floating island.
+- Do not use Bambu Studio auto-orient for this part. Keep the large mouth on the plate and the exhaust barb vertical.
+- In preview, confirm no support appears inside the mouth, suction throat, or small water nozzle bore.
+- If you manually add supports, paint them externally only.
 - If Bambu Studio drops the partial project settings, manually set the values above.
 - Use a real hose washer on the printed garden-hose thread and do not overtighten.
 

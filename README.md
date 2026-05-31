@@ -30,10 +30,10 @@ Recommended starting settings:
 - Top/bottom layers: `6+`
 - Infill: `40-60%`
 - Brim: `5 mm`
-- Print the `head` with the narrow center skid on the build plate
-- Do not use slicer auto-orient if it stands the part upright; the intended print orientation is the low `187 x 85 x 80 mm` footprint with the skid down
-- Avoid supports inside the slurry path or water-jet path
-- Use build-plate-only or painted supports only under the external hose boss if your slicer requires them
+- Print vertically with the large pickup mouth on the build plate and the exhaust barb upward
+- Do not use slicer auto-orient if it changes this mouth-down orientation; the intended 3MF bounds are about `85 x 78 x 180 mm`
+- Supports should be disabled by default so the slurry path and water-jet path stay clear
+- If your slicer insists on supports, use painted supports externally only and keep support out of the mouth, throat, and nozzle
 
 Notes on fit and tuning:
 
@@ -56,3 +56,5 @@ Current design assumptions:
 - Household water pressure: roughly `40-60 psi`
 
 Because eductor tools are sensitive to nozzle geometry, expect one tuning cycle after the first print. Three nozzle-size STL variants are included so the first test does not require editing the SCAD.
+
+The old bottom skid is still available in the SCAD as `bottom_skid_enabled = true`, but it is disabled in the default model and the X1C 3MF.

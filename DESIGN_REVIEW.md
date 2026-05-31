@@ -13,9 +13,10 @@ Generated outputs:
 OpenSCAD export:
 
 - OpenSCAD version: `2021.01`
-- Default STL triangles: `19756`
-- Bounding box: about `187.0 mm x 84.8 mm x 80.0 mm`
-- Estimated model volume from STL: about `98.5 cm3`
+- Default STL triangles: `27908`
+- Source-model bounding box: about `180.1 mm x 84.8 mm x 77.6 mm`
+- X1C 3MF vertical print bounds: about `84.8 mm x 77.6 mm x 180.1 mm`
+- Estimated model volume from STL: about `90.0 cm3`
 - Non-manifold edges: `0` in the regenerated STL variants and Bambu 3MF
 - Connected mesh components: `1`
 - OpenSCAD export completed without warnings
@@ -29,6 +30,7 @@ Iteration review:
 | V3 | `76 x 48 mm` mouth, `26 mm` throat, `31 mm` outlet, low rearward hose boss, `5.8 mm` recommended jet | Kept a large sand opening while increasing throat velocity and keeping the garden hose angled up/rearward away from the sand bed. |
 | V4 | Replaced the wide bottom plate with a narrow center skid, added a thin printable keel under the internal jet, and strengthened the garden-hose thread | Addresses the first print failure where the center jet printed as unsupported spaghetti and the hose thread did not survive visibly. |
 | V5 | Tightened the hose-thread dimensions to a print-fit `26.9 mm` major diameter and corrected the Bambu 3MF PETG profile metadata | Keeps the visible printable thread while avoiding an oversized male fitting, and prevents the 3MF from importing with PLA temperatures. |
+| V6 | Disabled the bottom skid by default, changed the X1C 3MF to vertical mouth-down printing, and replaced the hard pressure-feed turn with a smoother curved feed | Removes the unwanted bottom plate, minimizes support needs, and makes the pressure-water path less abrupt. |
 
 Flow path check:
 
@@ -37,7 +39,7 @@ Flow path check:
 - The flow converges into a `26 mm` suction throat with area about `531 mm2`.
 - Mouth-to-throat area ratio is about `5.4:1`, so the mouth resists clogging while the throat keeps slurry velocity high.
 - Pressure water enters through a low-profile garden-hose boss angled about `14 degrees` upward from the body axis toward the exhaust side.
-- The feed turns down to a plenum and exits through a downstream-facing jet on the centerline of the throat.
+- The feed now follows a smoother curved path into the plenum and exits through a downstream-facing jet on the centerline of the throat.
 - The `7.4 mm` nozzle tip leaves about `488 mm2` of annular suction area in the `26 mm` throat.
 - The lower printable keel under the jet is estimated to occupy about `29 mm2`, leaving about `459 mm2` of annular slurry area around the jet tip.
 - The outlet diffuses to `31 mm` and then into the nominal `1-1/4 in.` exhaust barb.
@@ -67,15 +69,14 @@ The hose connector is now low and rearward/upward, closer to the original part. 
 
 Printability review:
 
-- Print with the narrow center skid on the build plate.
-- Do not use slicer auto-orient if it stands the part upright at about `187 mm` tall. That orientation puts the exhaust path vertical; the intended print orientation is the low `187 x 85 x 80 mm` skid-down footprint.
+- Print vertically with the large pickup mouth on the build plate and the exhaust barb upward.
+- Do not use slicer auto-orient if it changes this mouth-down orientation; the intended 3MF bounds are about `85 x 78 x 180 mm`.
 - Use PETG, ASA, or ABS. Avoid PLA for hot sun and threaded hose stress.
 - Use at least `5` walls, `6` top/bottom layers, and `40-60%` infill.
-- The X1C 3MF is encoded for Bambu PETG Basic, `255 C` nozzle / `245 C` first layer, `70 C` textured PEI bed, `6` walls, `7` top/bottom layers, `45%` gyroid infill, `5 mm` brim, and build-plate-only tree supports.
-- Avoid internal supports in the slurry path or water jet path.
-- If the slicer insists on supports, use build-plate-only or painted supports under the external hose boss and thread area.
+- The X1C 3MF is encoded for Bambu PETG Basic, `255 C` nozzle / `245 C` first layer, `70 C` textured PEI bed, `6` walls, `7` top/bottom layers, `45%` gyroid infill, `5 mm` brim, and supports disabled.
+- Avoid supports in the slurry path or water jet path. If support is required, use painted external support only.
 - Seal the printed garden-hose thread and any visible layer porosity with epoxy or polyurethane if it leaks.
-- The center jet now has an internal lower keel so it should print as connected geometry rather than a floating island.
+- The old bottom skid is still available as `bottom_skid_enabled = true`, but the default model and X1C 3MF do not include it.
 
 Remaining risks:
 
