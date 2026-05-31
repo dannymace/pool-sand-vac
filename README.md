@@ -29,14 +29,15 @@ Recommended starting settings:
 - Walls: `5+`
 - Top/bottom layers: `6+`
 - Infill: `40-60%`
-- Print the `head` with the flat skid on the build plate
-- Do not use slicer auto-orient if it stands the part upright; the intended print orientation is the low `185 x 85 x 79 mm` footprint with the skid down
+- Brim: `5 mm`
+- Print the `head` with the narrow center skid on the build plate
+- Do not use slicer auto-orient if it stands the part upright; the intended print orientation is the low `187 x 85 x 80 mm` footprint with the skid down
 - Avoid supports inside the slurry path or water-jet path
 - Use build-plate-only or painted supports only under the external hose boss if your slicer requires them
 
 Notes on fit and tuning:
 
-- The hose-side thread is a printable approximation of `3/4-11.5 GHT`. It should be treated as a first-pass fit, not a guaranteed production thread.
+- The hose-side thread is a printable approximation of `3/4-11.5 GHT` with an intentionally stronger flat crest. It should be treated as a first-pass fit, not a guaranteed production thread.
 - The nozzle orifice is parameterized with `nozzle_orifice_d_override`. Start with the `5.8 mm` recommended STL. If suction is weak, try `5.4 mm`. If flow is too restricted and your water supply is strong, try `6.2 mm`.
 - The exhaust barb is sized for nominal `1-1/4"` corrugated pool hose. Hose tolerances vary. If your hose is loose or tight, adjust `barb_peak_d` by about `0.5 mm`.
 - For reliable pressure handling, seal any visibly porous interior print surfaces with epoxy or polyurethane sealant.

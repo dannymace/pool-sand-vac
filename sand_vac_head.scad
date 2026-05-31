@@ -45,20 +45,21 @@ feed_bore_d = 9.0;
 feed_support_od = 16.8;
 jet_body_d = 12.5;
 jet_tip_d = 7.4;
+nozzle_keel_width = 3.2; // printable internal web that supports the center jet
 nozzle_orifice_d_default = 5.8;
 nozzle_orifice_d = is_undef(nozzle_orifice_d_override) ? nozzle_orifice_d_default : nozzle_orifice_d_override;
 nozzle_straight_len = 5.0;
 
 // Standard US garden hose thread, printable approximation.
 ght_pitch = 25.4 / 11.5;
-ght_major_d = 26.8;
-ght_minor_d = 25.2;
-ght_thread_depth = 0.8;
-ght_thread_root_overlap = 0.2; // prevents coincident thread-root faces in STL exports
-ght_thread_len = 14.5;
-washer_face_d = 30.5;
+ght_major_d = 27.2;
+ght_minor_d = 24.8;
+ght_thread_depth = 1.2;
+ght_thread_root_overlap = 0.25; // fuses thread root into the connector body
+ght_thread_len = 16.0;
+washer_face_d = 31.5;
 washer_face_t = 3.0;
-grip_hex_d = 34;
+grip_hex_d = 35;
 grip_hex_t = 6;
 
 external_hose_len = washer_face_t + grip_hex_t + ght_thread_len + 8;
@@ -104,14 +105,15 @@ module section_cut() {
 }
 
 module flat_print_skid() {
-    // A shallow skid gives the part a stable print face and helps it ride the
-    // sand bed without a fragile knife edge.
+    // A narrow center skid replaces the earlier wide plate. It supports the
+    // lowest centerline of the scoop and gives the internal jet keel a printable
+    // load path without creating a large sheet under the mouth.
     hull() {
         translate([2, 0, -(mouth_outer_minor / 2) - 1.2])
-            cube([14, mouth_outer_major * 0.78, 2.4], center = true);
+            cube([18, 18, 2.4], center = true);
 
         translate([barb_start - 8, 0, -(throat_id / 2) - wall - 0.8])
-            cube([16, throat_id + 12, 2.0], center = true);
+            cube([18, 14, 2.0], center = true);
     }
 }
 
@@ -178,7 +180,9 @@ module body_shell() {
 }
 
 module thread_helix(major_d, pitch, length, depth, root_overlap = 0) {
-    slices_per_turn = 28;
+    slices_per_turn = 36;
+    flank_w = pitch * 0.36;
+    crest_w = pitch * 0.15;
 
     linear_extrude(
         height = length,
@@ -188,9 +192,10 @@ module thread_helix(major_d, pitch, length, depth, root_overlap = 0) {
     )
         translate([(major_d / 2) - depth - root_overlap, 0, 0])
         polygon([
-            [0, -pitch * 0.33],
-            [depth + root_overlap, 0],
-            [0, pitch * 0.33]
+            [0, -flank_w],
+            [depth + root_overlap, -crest_w],
+            [depth + root_overlap, crest_w],
+            [0, flank_w]
         ]);
 }
 
@@ -233,6 +238,22 @@ module venturi_nozzle_outer() {
 
         translate([jet_plenum[0] - 3, 0, jet_plenum[2]])
             x_taper(jet_exit_x - jet_plenum[0] + 3, jet_body_d, jet_tip_d);
+
+        nozzle_print_keel();
+    }
+}
+
+module nozzle_print_keel() {
+    // This web is deliberately inside the slurry path. The earlier suspended
+    // center jet could start in midair during FDM printing; this gives it a
+    // self-supporting ramp from the lower throat wall while keeping most of the
+    // annular suction area open.
+    hull() {
+        translate([jet_plenum[0] - 5, 0, -(throat_id / 2) - 0.9])
+            cube([5, nozzle_keel_width, 1.4], center = true);
+
+        translate([jet_exit_x - 1.5, 0, -(jet_tip_d / 2) - 0.3])
+            cube([5, nozzle_keel_width, 1.2], center = true);
     }
 }
 

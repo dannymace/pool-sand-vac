@@ -13,9 +13,9 @@ Generated outputs:
 OpenSCAD export:
 
 - OpenSCAD version: `2021.01`
-- Default STL triangles: `17806`
-- Bounding box: about `185.0 mm x 84.8 mm x 79.5 mm`
-- Estimated model volume from STL: about `114.9 cm3`
+- Default STL triangles: `19754`
+- Bounding box: about `187.0 mm x 84.8 mm x 80.0 mm`
+- Estimated model volume from STL: about `98.5 cm3`
 - Non-manifold edges: `0` in the regenerated STL variants and Bambu 3MF
 - Connected mesh components: `1`
 - OpenSCAD export completed without warnings
@@ -26,7 +26,8 @@ Iteration review:
 |---|---|---|
 | V1 | Straight taper, vertical hose boss, `30 mm` tube, `5.8 mm` jet | Proved the eductor path but made the hose connector too tall and left no deliberate suction throat. |
 | V2 | Larger mouth, `27.5 mm` throat, flat print skid, vertical/upward hose boss, smaller `5.4 mm` jet | Improved pickup and printability, but the hose connector was still not close enough to the original low-profile orientation. |
-| V3 | `76 x 48 mm` mouth, `26 mm` throat, `31 mm` outlet, low rearward hose boss, `5.8 mm` recommended jet | Current design. It keeps a large sand opening while increasing throat velocity and keeping the garden hose angled up/rearward away from the sand bed. |
+| V3 | `76 x 48 mm` mouth, `26 mm` throat, `31 mm` outlet, low rearward hose boss, `5.8 mm` recommended jet | Kept a large sand opening while increasing throat velocity and keeping the garden hose angled up/rearward away from the sand bed. |
+| V4 | Replaced the wide bottom plate with a narrow center skid, added a thin printable keel under the internal jet, and strengthened the garden-hose thread | Addresses the first print failure where the center jet printed as unsupported spaghetti and the hose thread did not survive visibly. |
 
 Flow path check:
 
@@ -55,18 +56,19 @@ The hose connector is now low and rearward/upward, closer to the original part. 
 
 Printability review:
 
-- Print with the flat skid on the build plate.
-- Do not use slicer auto-orient if it stands the part upright at about `185 mm` tall. That orientation puts the exhaust path vertical; the intended print orientation is the low `185 x 85 x 79 mm` skid-down footprint.
+- Print with the narrow center skid on the build plate.
+- Do not use slicer auto-orient if it stands the part upright at about `187 mm` tall. That orientation puts the exhaust path vertical; the intended print orientation is the low `187 x 85 x 80 mm` skid-down footprint.
 - Use PETG, ASA, or ABS. Avoid PLA for hot sun and threaded hose stress.
 - Use at least `5` walls, `6` top/bottom layers, and `40-60%` infill.
 - Avoid internal supports in the slurry path or water jet path.
 - If the slicer insists on supports, use build-plate-only or painted supports under the external hose boss and thread area.
 - Seal the printed garden-hose thread and any visible layer porosity with epoxy or polyurethane if it leaks.
+- The center jet now has an internal lower keel so it should print as connected geometry rather than a floating island.
 
 Remaining risks:
 
 - This is a geometric and first-order hydraulic review, not CFD validation.
-- The printed GHT thread may leak or wear. A real hose washer is required, and overtightening may damage the print.
+- The printed GHT thread may leak or wear. A real hose washer is required, and overtightening may damage the print. The thread is intentionally more pronounced than the earlier version so it survives FDM printing better.
 - Sand transport still depends on priming the exhaust hose and keeping it continuously downhill.
 - If suction is weak, print the `5.4 mm` nozzle variant.
 - If it moves water but not enough sand, and supply pressure is strong, print the `6.2 mm` nozzle variant.
