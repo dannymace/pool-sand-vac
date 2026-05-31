@@ -52,9 +52,9 @@ nozzle_straight_len = 5.0;
 
 // Standard US garden hose thread, printable approximation.
 ght_pitch = 25.4 / 11.5;
-ght_major_d = 27.2;
-ght_minor_d = 24.8;
-ght_thread_depth = 1.2;
+ght_major_d = 26.9;        // near 1.0625 in GHT male OD, with slight FDM clearance
+ght_minor_d = 24.7;
+ght_thread_depth = 1.1;
 ght_thread_root_overlap = 0.25; // fuses thread root into the connector body
 ght_thread_len = 16.0;
 washer_face_d = 31.5;

@@ -13,7 +13,7 @@ Generated outputs:
 OpenSCAD export:
 
 - OpenSCAD version: `2021.01`
-- Default STL triangles: `19754`
+- Default STL triangles: `19756`
 - Bounding box: about `187.0 mm x 84.8 mm x 80.0 mm`
 - Estimated model volume from STL: about `98.5 cm3`
 - Non-manifold edges: `0` in the regenerated STL variants and Bambu 3MF
@@ -28,6 +28,7 @@ Iteration review:
 | V2 | Larger mouth, `27.5 mm` throat, flat print skid, vertical/upward hose boss, smaller `5.4 mm` jet | Improved pickup and printability, but the hose connector was still not close enough to the original low-profile orientation. |
 | V3 | `76 x 48 mm` mouth, `26 mm` throat, `31 mm` outlet, low rearward hose boss, `5.8 mm` recommended jet | Kept a large sand opening while increasing throat velocity and keeping the garden hose angled up/rearward away from the sand bed. |
 | V4 | Replaced the wide bottom plate with a narrow center skid, added a thin printable keel under the internal jet, and strengthened the garden-hose thread | Addresses the first print failure where the center jet printed as unsupported spaghetti and the hose thread did not survive visibly. |
+| V5 | Tightened the hose-thread dimensions to a print-fit `26.9 mm` major diameter and corrected the Bambu 3MF PETG profile metadata | Keeps the visible printable thread while avoiding an oversized male fitting, and prevents the 3MF from importing with PLA temperatures. |
 
 Flow path check:
 
@@ -38,7 +39,17 @@ Flow path check:
 - Pressure water enters through a low-profile garden-hose boss angled about `14 degrees` upward from the body axis toward the exhaust side.
 - The feed turns down to a plenum and exits through a downstream-facing jet on the centerline of the throat.
 - The `7.4 mm` nozzle tip leaves about `488 mm2` of annular suction area in the `26 mm` throat.
+- The lower printable keel under the jet is estimated to occupy about `29 mm2`, leaving about `459 mm2` of annular slurry area around the jet tip.
 - The outlet diffuses to `31 mm` and then into the nominal `1-1/4 in.` exhaust barb.
+
+Garden-hose connection:
+
+- Thread form: printable approximation of straight `3/4-11.5 GHT/NH`.
+- Pitch: `2.2087 mm`.
+- Mesh-measured major diameter: about `26.9 mm`, close to the common `1.0625 in.` / `27.0 mm` male GHT OD.
+- Mesh-measured root diameter: about `24.7 mm`.
+- Radial thread depth: about `1.1 mm`, with a flat crest for FDM survivability.
+- Seal: relies on a real garden-hose washer, not thread taper.
 
 Nozzle options:
 
@@ -60,6 +71,7 @@ Printability review:
 - Do not use slicer auto-orient if it stands the part upright at about `187 mm` tall. That orientation puts the exhaust path vertical; the intended print orientation is the low `187 x 85 x 80 mm` skid-down footprint.
 - Use PETG, ASA, or ABS. Avoid PLA for hot sun and threaded hose stress.
 - Use at least `5` walls, `6` top/bottom layers, and `40-60%` infill.
+- The X1C 3MF is encoded for Bambu PETG Basic, `255 C` nozzle / `245 C` first layer, `70 C` textured PEI bed, `6` walls, `7` top/bottom layers, `45%` gyroid infill, `5 mm` brim, and build-plate-only tree supports.
 - Avoid internal supports in the slurry path or water jet path.
 - If the slicer insists on supports, use build-plate-only or painted supports under the external hose boss and thread area.
 - Seal the printed garden-hose thread and any visible layer porosity with epoxy or polyurethane if it leaks.
