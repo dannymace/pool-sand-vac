@@ -13,10 +13,10 @@ Generated outputs:
 OpenSCAD export:
 
 - OpenSCAD version: `2021.01`
-- Default STL triangles: `27908`
+- Default STL triangles: `28738`
 - Source-model bounding box: about `180.1 mm x 84.8 mm x 77.6 mm`
 - X1C 3MF vertical print bounds: about `84.8 mm x 77.6 mm x 180.1 mm`
-- Estimated model volume from STL: about `90.0 cm3`
+- Estimated model volume from STL: about `90.2 cm3`
 - Non-manifold edges: `0` in the regenerated STL variants and Bambu 3MF
 - Connected mesh components: `1`
 - OpenSCAD export completed without warnings
@@ -31,6 +31,7 @@ Iteration review:
 | V4 | Replaced the wide bottom plate with a narrow center skid, added a thin printable keel under the internal jet, and strengthened the garden-hose thread | Addresses the first print failure where the center jet printed as unsupported spaghetti and the hose thread did not survive visibly. |
 | V5 | Tightened the hose-thread dimensions to a print-fit `26.9 mm` major diameter and corrected the Bambu 3MF PETG profile metadata | Keeps the visible printable thread while avoiding an oversized male fitting, and prevents the 3MF from importing with PLA temperatures. |
 | V6 | Disabled the bottom skid by default, changed the X1C 3MF to vertical mouth-down printing, and replaced the hard pressure-feed turn with a smoother curved feed | Removes the unwanted bottom plate, minimizes support needs, and makes the pressure-water path less abrupt. |
+| V7 | Deepened the garden-hose thread grooves while keeping the `26.9 mm` outside diameter | Makes the hose-thread form visibly present in Bambu Studio and more likely to survive PETG printing without making the male adapter oversized. |
 
 Flow path check:
 
@@ -49,8 +50,8 @@ Garden-hose connection:
 - Thread form: printable approximation of straight `3/4-11.5 GHT/NH`.
 - Pitch: `2.2087 mm`.
 - Mesh-measured major diameter: about `26.9 mm`, close to the common `1.0625 in.` / `27.0 mm` male GHT OD.
-- Mesh-measured root diameter: about `24.7 mm`.
-- Radial thread depth: about `1.1 mm`, with a flat crest for FDM survivability.
+- Mesh-measured root diameter: about `23.8 mm`.
+- Radial thread depth: about `1.6 mm`, with a wider flat crest for FDM survivability.
 - Seal: relies on a real garden-hose washer, not thread taper.
 
 Nozzle options:

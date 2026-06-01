@@ -54,10 +54,10 @@ nozzle_straight_len = 5.0;
 // Standard US garden hose thread, printable approximation.
 ght_pitch = 25.4 / 11.5;
 ght_major_d = 26.9;        // near 1.0625 in GHT male OD, with slight FDM clearance
-ght_minor_d = 24.7;
-ght_thread_depth = 1.1;
-ght_thread_root_overlap = 0.25; // fuses thread root into the connector body
-ght_thread_len = 16.0;
+ght_minor_d = 23.8;        // deeper groove so PETG prints a visible usable thread
+ght_thread_depth = 1.45;
+ght_thread_root_overlap = 0.35; // fuses thread root into the connector body
+ght_thread_len = 18.0;
 washer_face_d = 31.5;
 washer_face_t = 3.0;
 grip_hex_d = 35;
@@ -225,8 +225,8 @@ module body_shell() {
 
 module thread_helix(major_d, pitch, length, depth, root_overlap = 0) {
     slices_per_turn = 36;
-    flank_w = pitch * 0.36;
-    crest_w = pitch * 0.15;
+    flank_w = pitch * 0.42;
+    crest_w = pitch * 0.20;
 
     linear_extrude(
         height = length,
