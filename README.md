@@ -1,6 +1,6 @@
 # Pool Sand Vac Print
 
-This is a printable functional equivalent of the Pentair `542090` sand vac head. It follows the same basic layout shown in current retail photos: a scoop body, a large exhaust outlet for `1-1/4"` pool hose, and a separate pressurized water jet that drives suction through an eductor effect.
+This is a printable functional fora pool sandfilter vac head.  It's purpose is to remove sand from a sand filter.
 
 Files:
 
