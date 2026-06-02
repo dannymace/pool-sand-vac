@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ThreadType>
+  <Name>Garden Hose Threads</Name>
+  <CustomName>Garden Hose Threads</CustomName>
+  <Unit>in</Unit>
+  <Angle>60</Angle>
+  <SortOrder>900</SortOrder>
+  <ThreadSize>
+    <Size>1.0625</Size>
+    <Designation>
+      <ThreadDesignation>3/4-11.5 GHT</ThreadDesignation>
+      <CTD>3/4-11.5 GHT</CTD>
+      <TPI>11.5</TPI>
+      <Thread>
+        <Gender>external</Gender>
+        <Class>PrintA</Class>
+        <MajorDia>1.0591</MajorDia>
+        <PitchDia>1.0000</PitchDia>
+        <MinorDia>0.9370</MinorDia>
+      </Thread>
+      <Thread>
+        <Gender>internal</Gender>
+        <Class>PrintB</Class>
+        <MajorDia>1.0725</MajorDia>
+        <PitchDia>1.0150</PitchDia>
+        <MinorDia>0.9650</MinorDia>
+        <TapDrill>0.9650</TapDrill>
+      </Thread>
+    </Designation>
+  </ThreadSize>
+</ThreadType>

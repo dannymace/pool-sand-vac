@@ -1,6 +1,6 @@
 # Pool Sand Vac Print
 
-This is a printable functional fora pool sandfilter vac head.  It's purpose is to remove sand from a sand filter.
+This is a printable functional pool sand filter vac head. Its purpose is to remove sand from a sand filter.
 
 Files:
 
@@ -16,6 +16,20 @@ Files:
 - `renders/section.png`: cutaway render
 - `renders/flow_check.png`: cutaway render with colored flow paths
 - `README_PRINT_X1C.md`: X1C-specific print settings and preflight check
+
+CadQuery/STEP package files:
+
+- `build_step_master.py`: rebuilds the editable STEP/STL package from the current smoothed geometry
+- `make_bambu_3mf.py`: regenerates the vertical PLA prototype 3MF from the combined STL
+- `VERSION`: package version for the STEP/CadQuery export set
+- `fusion_thread_data/GardenHoseThreads.xml`: optional Fusion 360 thread profile for an editable `3/4-11.5 GHT` thread feature
+- `out/sand_vac_head_combined_smooth.step`: preferred editable combined STEP
+- `out/sand_vac_head_combined_smooth.stl`: matching combined STL
+- `out/sand_vac_head_clean_master.step`: compatibility alias for the combined STEP
+- `out/sand_vac_head_clean_master.stl`: compatibility alias for the combined STL
+- `out/sand_vac_head_venturi_insert.step`: separate pressure-feed venturi insert STEP
+- `out/sand_vac_head_venturi_insert.stl`: separate pressure-feed venturi insert STL
+- `out/sand_vac_head_combined_smooth_vertical_PLA.3mf`: Bambu Studio-style vertical PLA prototype project
 
 Expected part modes:
 
@@ -36,6 +50,21 @@ Recommended starting settings:
 - Supports should be disabled by default so the slurry path and water-jet path stay clear
 - If your slicer insists on supports, use painted supports externally only and keep support out of the mouth, throat, and nozzle
 
+PLA prototype 3MF:
+
+- `out/sand_vac_head_combined_smooth_vertical_PLA.3mf` is intended for a PLA prototype print in Bambu Studio.
+- It rotates the STEP-derived combined body upright, giving about a `77 x 85 mm` bed footprint and `218 mm` print height.
+- The embedded prototype preset uses `0.20 mm` baseline layers, variable layers down to `0.12 mm` near the hose-thread zone, `6` walls, `6` top/bottom layers, `30%` gyroid infill, tree/auto supports, and a `10 mm` brim.
+- It is a slicer project, not sliced G-code; open it in Bambu Studio and confirm the selected printer, plate, and loaded PLA before printing.
+
+STEP/Fusion workflow:
+
+1. Install CadQuery 2.4+ or open the script in CQ-editor.
+2. Run `build_step_master.py`.
+3. Run `make_bambu_3mf.py` if you want to regenerate the vertical PLA prototype print project.
+4. Import `out/sand_vac_head_combined_smooth.step` into Fusion 360.
+5. Inspect the included garden-hose thread; replace it with `fusion_thread_data/GardenHoseThreads.xml` only if you need an editable Fusion Thread feature.
+
 Notes on fit and tuning:
 
 - The hose-side thread is a printable approximation of `3/4-11.5 GHT` with a `26.9 mm` major diameter, about `23.8 mm` root diameter, and an intentionally aggressive flat crest/groove so it is visible in PETG. It should be treated as a first-pass fit, not a guaranteed production thread.
@@ -43,6 +72,15 @@ Notes on fit and tuning:
 - The exhaust barb is sized for nominal `1-1/4"` corrugated pool hose. Hose tolerances vary. If your hose is loose or tight, adjust `barb_peak_d` by about `0.5 mm`.
 - For reliable pressure handling, seal any visibly porous interior print surfaces with epoxy or polyurethane sealant.
 - Keep the exhaust hose continuously sloping downward during use. Pentair's published instructions for the original tool call this out because any uphill section lets sand collect in the discharge hose.
+
+Model note:
+
+- The STEP rebuild follows the current OpenSCAD geometry closely for the main body, diffuser, outlet barb, hose angle, feed bore, and venturi path.
+- The pressure-feed tube is fused into the hose connector with an enlarged socket and blend so the printed water path is sealed at that junction.
+- The pressure-feed curve starts at the hose junction face so the bore and swept venturi tube overlap instead of leaving an exposed side opening in the feed path.
+- The venturi throat keeps about `57 mm` of straight post-jet mixing length (`2.19x` the `26 mm` throat diameter) before the diffuser.
+- The pressure nozzle tip has a `1.4 mm` radial wall around the `5.8 mm` orifice.
+- The preferred combined STEP is one re-importable solid and uses the same functional boolean order as the OpenSCAD STL: hollow slurry body first, then hose boss and venturi insert, then pressure-water bore cut.
 
 What I based this on:
 
