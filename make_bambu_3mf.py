@@ -97,21 +97,44 @@ def rotate_upright(
     return shifted, stats
 
 
-def write_3mf_model(triangles: list[tuple[tuple[float, float, float], ...]]) -> str:
+def write_root_model() -> str:
     today = dt.date.today().isoformat()
+    return "".join(
+        [
+            '<?xml version="1.0" encoding="UTF-8"?>\n',
+            '<model unit="millimeter" xml:lang="en-US" ',
+            'xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02" ',
+            'xmlns:p="http://schemas.microsoft.com/3dmanufacturing/production/2015/06" ',
+            'xmlns:BambuStudio="http://schemas.bambulab.com/package/2021" requiredextensions="p">\n',
+            ' <metadata name="Application">BambuStudio-02.07.00.55</metadata>\n',
+            ' <metadata name="BambuStudio:3mfVersion">1</metadata>\n',
+            f' <metadata name="CreationDate">{today}</metadata>\n',
+            f' <metadata name="ModificationDate">{today}</metadata>\n',
+            ' <metadata name="Title">Sand Vac Head Vertical PLA Prototype</metadata>\n',
+            " <resources>\n",
+            '  <object id="1" name="sand_vac_head_combined_smooth_vertical_PLA" p:UUID="00000001-61cb-4c03-9d28-80fed5dfa1dc" type="model">\n',
+            "   <components>\n",
+            '    <component p:path="/3D/Objects/object_1.model" objectid="65537" p:UUID="00010000-b206-40ff-9872-83e8017abed1" transform="1 0 0 0 1 0 0 0 1 0 0 0"/>\n',
+            "   </components>\n",
+            "  </object>\n",
+            " </resources>\n",
+            ' <build p:UUID="2c7c17d8-22b5-4d84-8835-1976022ea369">\n',
+            '  <item objectid="1" p:UUID="00000001-b1ec-4553-aec9-835e5b724bb4" transform="1 0 0 0 1 0 0 0 1 0 0 0" printable="1"/>\n',
+            " </build>\n",
+            "</model>\n",
+        ]
+    )
+
+
+def write_object_model(triangles: list[tuple[tuple[float, float, float], ...]]) -> str:
     out = [
         '<?xml version="1.0" encoding="UTF-8"?>\n',
         '<model unit="millimeter" xml:lang="en-US" ',
         'xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02" ',
         'xmlns:p="http://schemas.microsoft.com/3dmanufacturing/production/2015/06" ',
         'xmlns:BambuStudio="http://schemas.bambulab.com/package/2021">\n',
-        ' <metadata name="Application">BambuStudio-compatible project</metadata>\n',
-        ' <metadata name="BambuStudio:3mfVersion">1</metadata>\n',
-        f' <metadata name="CreationDate">{today}</metadata>\n',
-        f' <metadata name="ModificationDate">{today}</metadata>\n',
-        ' <metadata name="Title">Sand Vac Head Vertical PLA Prototype</metadata>\n',
         " <resources>\n",
-        '  <object id="1" name="sand_vac_head_combined_smooth_vertical_PLA" type="model">\n',
+        '  <object id="65537" name="sand_vac_head_combined_smooth_vertical_PLA" type="model">\n',
         "   <mesh>\n",
         "    <vertices>\n",
     ]
@@ -129,9 +152,6 @@ def write_3mf_model(triangles: list[tuple[tuple[float, float, float], ...]]) -> 
             "   </mesh>\n",
             "  </object>\n",
             " </resources>\n",
-            " <build>\n",
-            '  <item objectid="1" printable="1"/>\n',
-            " </build>\n",
             "</model>\n",
         ]
     )
@@ -238,7 +258,13 @@ def model_settings_xml(face_count: int, height: float) -> str:
     <metadata face_count="{face_count}"/>
     <part id="65537" subtype="normal_part">
       <metadata key="name" value="sand_vac_head_combined_smooth_vertical_PLA"/>
+      <metadata key="matrix" value="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"/>
       <metadata key="source_file" value="{xml_escape.escape(SOURCE_STL.name)}"/>
+      <metadata key="source_object_id" value="0"/>
+      <metadata key="source_volume_id" value="0"/>
+      <metadata key="source_offset_x" value="0"/>
+      <metadata key="source_offset_y" value="0"/>
+      <metadata key="source_offset_z" value="0"/>
       <mesh_stat face_count="{face_count}" edges_fixed="0" degenerate_facets="0" facets_removed="0" facets_reversed="0" backwards_edges="0"/>
     </part>
   </object>
@@ -246,7 +272,15 @@ def model_settings_xml(face_count: int, height: float) -> str:
     <metadata key="plater_id" value="1"/>
     <metadata key="plater_name" value="Plate 1"/>
     <metadata key="locked" value="false"/>
+    <metadata key="filament_map_mode" value="Auto For Flush"/>
+    <metadata key="filament_maps" value="1"/>
+    <metadata key="filament_volume_maps" value="0"/>
     <metadata key="printable_height" value="{height:.3f}"/>
+    <model_instance>
+      <metadata key="object_id" value="1"/>
+      <metadata key="instance_id" value="0"/>
+      <metadata key="identify_id" value="159"/>
+    </model_instance>
   </plate>
   <assemble>
     <assemble_item object_id="1" instance_id="0" transform="1 0 0 0 1 0 0 0 1 0 0 0" offset="0 0 0" />
@@ -281,7 +315,8 @@ def package() -> None:
     triangles = read_stl(SOURCE_STL)
     upright, stats = rotate_upright(triangles)
     height = stats["max_z"] - stats["min_z"]
-    model_xml = write_3mf_model(upright)
+    root_model_xml = write_root_model()
+    object_model_xml = write_object_model(upright)
     project_settings = load_project_settings()
     notes = "\n".join(
         [
@@ -311,7 +346,9 @@ def package() -> None:
 </Relationships>
 """
     model_rels = """<?xml version="1.0" encoding="UTF-8"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"/>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Target="/3D/Objects/object_1.model" Id="rel-1" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>
+</Relationships>
 """
     slice_info = """<?xml version="1.0" encoding="UTF-8"?>
 <config>
@@ -328,7 +365,8 @@ def package() -> None:
     with zipfile.ZipFile(TARGET_3MF, "w", compression=zipfile.ZIP_DEFLATED) as zf:
         zf.writestr("[Content_Types].xml", content_types)
         zf.writestr("_rels/.rels", root_rels)
-        zf.writestr("3D/3dmodel.model", model_xml)
+        zf.writestr("3D/3dmodel.model", root_model_xml)
+        zf.writestr("3D/Objects/object_1.model", object_model_xml)
         zf.writestr("3D/_rels/3dmodel.model.rels", model_rels)
         zf.writestr(
             "Metadata/project_settings.config",
