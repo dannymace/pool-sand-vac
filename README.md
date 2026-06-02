@@ -55,7 +55,7 @@ PLA prototype 3MF:
 - `out/sand_vac_head_combined_smooth_vertical_PLA.3mf` is intended for a PLA prototype print in Bambu Studio.
 - It rotates the STEP-derived combined body upright, giving about a `77 x 85 mm` bed footprint and `218 mm` print height.
 - The embedded prototype preset uses `0.20 mm` baseline layers, variable layers down to `0.12 mm` near the hose-thread zone, `6` walls, `6` top/bottom layers, `30%` gyroid infill, tree/auto supports, and a `10 mm` brim.
-- It is a slicer project, not sliced G-code; it uses Bambu's project component/object layout and should be opened in Bambu Studio so you can confirm the selected printer, plate, and loaded PLA before printing.
+- It is a slicer project, not sliced G-code; it reuses the known-good Bambu project container layout and should be opened in Bambu Studio so you can confirm the selected printer, plate, and loaded PLA before printing.
 
 STEP/Fusion workflow:
 

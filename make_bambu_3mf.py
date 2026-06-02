@@ -17,6 +17,7 @@ ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "out"
 SOURCE_STL = OUT / "sand_vac_head_combined_smooth.stl"
 TARGET_3MF = OUT / "sand_vac_head_combined_smooth_vertical_PLA.3mf"
+TEMPLATE_3MF = ROOT / "renders" / "sand_vac_head_X1C_PETG_strong.3mf"
 TEMPLATE_SETTINGS = (
     Path(os.environ.get("TEMP", ""))
     / "bambu_3mf_inspect"
@@ -55,9 +56,12 @@ def read_stl(path: Path) -> list[tuple[tuple[float, float, float], ...]]:
 
 def rotate_upright(
     triangles: list[tuple[tuple[float, float, float], ...]],
-    bed_center: tuple[float, float] = (128.0, 128.0),
 ) -> tuple[list[tuple[tuple[float, float, float], ...]], dict[str, float]]:
-    """Rotate the long original X axis to Z for vertical printing."""
+    """Rotate the long original X axis to Z for vertical printing.
+
+    Keep the object centered on local X/Y and use the 3MF build transform to
+    place it on the plate. This mirrors Bambu Studio project exports.
+    """
     transformed = []
     xs: list[float] = []
     ys: list[float] = []
@@ -76,8 +80,8 @@ def rotate_upright(
     min_x, max_x = min(xs), max(xs)
     min_y, max_y = min(ys), max(ys)
     min_z, max_z = min(zs), max(zs)
-    shift_x = bed_center[0] - (min_x + max_x) / 2.0
-    shift_y = bed_center[1] - (min_y + max_y) / 2.0
+    shift_x = -(min_x + max_x) / 2.0
+    shift_y = -(min_y + max_y) / 2.0
     shift_z = -min_z
 
     shifted = []
@@ -112,46 +116,65 @@ def write_root_model() -> str:
             f' <metadata name="ModificationDate">{today}</metadata>\n',
             ' <metadata name="Title">Sand Vac Head Vertical PLA Prototype</metadata>\n',
             " <resources>\n",
-            '  <object id="1" name="sand_vac_head_combined_smooth_vertical_PLA" p:UUID="00000001-61cb-4c03-9d28-80fed5dfa1dc" type="model">\n',
+            '  <object id="2" name="sand_vac_head_combined_smooth_vertical_PLA" p:UUID="00000009-61cb-4c03-9d28-80fed5dfa1dc" type="model">\n',
             "   <components>\n",
-            '    <component p:path="/3D/Objects/object_1.model" objectid="65537" p:UUID="00010000-b206-40ff-9872-83e8017abed1" transform="1 0 0 0 1 0 0 0 1 0 0 0"/>\n',
+            '    <component p:path="/3D/Objects/object_9.model" objectid="1" p:UUID="00090000-b206-40ff-9872-83e8017abed1" transform="1 0 0 0 1 0 0 0 1 0 0 0"/>\n',
             "   </components>\n",
             "  </object>\n",
             " </resources>\n",
             ' <build p:UUID="2c7c17d8-22b5-4d84-8835-1976022ea369">\n',
-            '  <item objectid="1" p:UUID="00000001-b1ec-4553-aec9-835e5b724bb4" transform="1 0 0 0 1 0 0 0 1 0 0 0" printable="1"/>\n',
+            '  <item objectid="2" p:UUID="00000002-b1ec-4553-aec9-835e5b724bb4" transform="1 0 0 0 1 0 0 0 1 128 128 0" printable="1"/>\n',
             " </build>\n",
             "</model>\n",
         ]
     )
 
 
+def indexed_mesh(
+    triangles: list[tuple[tuple[float, float, float], ...]],
+) -> tuple[list[tuple[float, float, float]], list[tuple[int, int, int]]]:
+    vertices: list[tuple[float, float, float]] = []
+    vertex_index: dict[tuple[float, float, float], int] = {}
+    indexed_triangles: list[tuple[int, int, int]] = []
+
+    for tri in triangles:
+        ids = []
+        for point in tri:
+            key = tuple(round(coord, 6) for coord in point)
+            if key not in vertex_index:
+                vertex_index[key] = len(vertices)
+                vertices.append(key)
+            ids.append(vertex_index[key])
+        indexed_triangles.append(tuple(ids))
+
+    return vertices, indexed_triangles
+
+
 def write_object_model(triangles: list[tuple[tuple[float, float, float], ...]]) -> str:
+    vertices, indexed_triangles = indexed_mesh(triangles)
     out = [
         '<?xml version="1.0" encoding="UTF-8"?>\n',
         '<model unit="millimeter" xml:lang="en-US" ',
         'xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02" ',
         'xmlns:p="http://schemas.microsoft.com/3dmanufacturing/production/2015/06" ',
-        'xmlns:BambuStudio="http://schemas.bambulab.com/package/2021">\n',
+        'requiredextensions="p">\n',
         " <resources>\n",
-        '  <object id="65537" name="sand_vac_head_combined_smooth_vertical_PLA" type="model">\n',
+        '  <object id="1" name="sand_vac_head_combined_smooth_vertical_PLA.stl" type="model" p:UUID="00090000-b206-40ff-9872-83e8017abed1">\n',
         "   <mesh>\n",
         "    <vertices>\n",
     ]
-    vertex_count = 0
-    for tri in triangles:
-        for x, y, z in tri:
-            out.append(f'     <vertex x="{x:.6f}" y="{y:.6f}" z="{z:.6f}"/>\n')
-            vertex_count += 1
+    for x, y, z in vertices:
+        out.append(f'     <vertex x="{x:.6f}" y="{y:.6f}" z="{z:.6f}"/>\n')
     out.extend(["    </vertices>\n", "    <triangles>\n"])
-    for i in range(0, vertex_count, 3):
-        out.append(f'     <triangle v1="{i}" v2="{i + 1}" v3="{i + 2}"/>\n')
+    for v1, v2, v3 in indexed_triangles:
+        out.append(f'     <triangle v1="{v1}" v2="{v2}" v3="{v3}"/>\n')
     out.extend(
         [
             "    </triangles>\n",
             "   </mesh>\n",
             "  </object>\n",
             " </resources>\n",
+            " <build />\n",
             "</model>\n",
         ]
     )
@@ -170,7 +193,12 @@ def set_all(settings: dict, key: str, value: str) -> None:
 
 
 def load_project_settings() -> dict:
-    if TEMPLATE_SETTINGS.exists():
+    if TEMPLATE_3MF.exists():
+        with zipfile.ZipFile(TEMPLATE_3MF) as zf:
+            settings = json.loads(
+                zf.read("Metadata/project_settings.config").decode("utf-8")
+            )
+    elif TEMPLATE_SETTINGS.exists():
         settings = json.loads(TEMPLATE_SETTINGS.read_text(encoding="utf-8"))
     else:
         settings = {}
@@ -250,13 +278,13 @@ def load_project_settings() -> dict:
 def model_settings_xml(face_count: int, height: float) -> str:
     return f"""<?xml version="1.0" encoding="UTF-8"?>
 <config>
-  <object id="1">
+  <object id="2">
     <metadata key="name" value="sand_vac_head_combined_smooth_vertical_PLA"/>
     <metadata key="extruder" value="1"/>
     <metadata key="support_threshold_angle" value="50"/>
     <metadata key="support_type" value="tree(auto)"/>
     <metadata face_count="{face_count}"/>
-    <part id="65537" subtype="normal_part">
+    <part id="1" subtype="normal_part">
       <metadata key="name" value="sand_vac_head_combined_smooth_vertical_PLA"/>
       <metadata key="matrix" value="1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1"/>
       <metadata key="source_file" value="{xml_escape.escape(SOURCE_STL.name)}"/>
@@ -277,13 +305,13 @@ def model_settings_xml(face_count: int, height: float) -> str:
     <metadata key="filament_volume_maps" value="0"/>
     <metadata key="printable_height" value="{height:.3f}"/>
     <model_instance>
-      <metadata key="object_id" value="1"/>
+      <metadata key="object_id" value="2"/>
       <metadata key="instance_id" value="0"/>
       <metadata key="identify_id" value="159"/>
     </model_instance>
   </plate>
   <assemble>
-    <assemble_item object_id="1" instance_id="0" transform="1 0 0 0 1 0 0 0 1 0 0 0" offset="0 0 0" />
+    <assemble_item object_id="2" instance_id="0" transform="1 0 0 0 1 0 0 0 1 128 128 0" offset="0 0 0" />
   </assemble>
 </config>
 """
@@ -335,9 +363,8 @@ def package() -> None:
 <Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
   <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
   <Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>
-  <Default Extension="config" ContentType="application/octet-stream"/>
-  <Default Extension="txt" ContentType="text/plain"/>
-  <Default Extension="json" ContentType="application/json"/>
+  <Default Extension="png" ContentType="image/png"/>
+  <Default Extension="gcode" ContentType="text/x.gcode"/>
 </Types>
 """
     root_rels = """<?xml version="1.0" encoding="UTF-8"?>
@@ -347,7 +374,7 @@ def package() -> None:
 """
     model_rels = """<?xml version="1.0" encoding="UTF-8"?>
 <Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Target="/3D/Objects/object_1.model" Id="rel-1" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>
+  <Relationship Target="/3D/Objects/object_9.model" Id="rel-1" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>
 </Relationships>
 """
     slice_info = """<?xml version="1.0" encoding="UTF-8"?>
@@ -362,11 +389,32 @@ def package() -> None:
 <config/>
 """
 
+    replacements = {
+        "3D/3dmodel.model",
+        "3D/Objects/object_9.model",
+        "3D/_rels/3dmodel.model.rels",
+        "Metadata/project_settings.config",
+        "Metadata/model_settings.config",
+        "Metadata/layer_heights_profile.txt",
+        "Metadata/filament_sequence.json",
+        "Metadata/print_profile_notes.txt",
+    }
+
     with zipfile.ZipFile(TARGET_3MF, "w", compression=zipfile.ZIP_DEFLATED) as zf:
-        zf.writestr("[Content_Types].xml", content_types)
-        zf.writestr("_rels/.rels", root_rels)
+        if TEMPLATE_3MF.exists():
+            with zipfile.ZipFile(TEMPLATE_3MF) as template:
+                for item in template.infolist():
+                    if item.filename in replacements:
+                        continue
+                    zf.writestr(item, template.read(item.filename))
+        else:
+            zf.writestr("[Content_Types].xml", content_types)
+            zf.writestr("_rels/.rels", root_rels)
+            zf.writestr("Metadata/slice_info.config", slice_info)
+            zf.writestr("Metadata/cut_information.xml", cut_info)
+
         zf.writestr("3D/3dmodel.model", root_model_xml)
-        zf.writestr("3D/Objects/object_1.model", object_model_xml)
+        zf.writestr("3D/Objects/object_9.model", object_model_xml)
         zf.writestr("3D/_rels/3dmodel.model.rels", model_rels)
         zf.writestr(
             "Metadata/project_settings.config",
@@ -374,8 +422,6 @@ def package() -> None:
         )
         zf.writestr("Metadata/model_settings.config", model_settings_xml(len(upright), height))
         zf.writestr("Metadata/layer_heights_profile.txt", layer_profile(height))
-        zf.writestr("Metadata/slice_info.config", slice_info)
-        zf.writestr("Metadata/cut_information.xml", cut_info)
         zf.writestr("Metadata/filament_sequence.json", json.dumps({"sequence": [1]}))
         zf.writestr("Metadata/print_profile_notes.txt", notes + "\n")
 
