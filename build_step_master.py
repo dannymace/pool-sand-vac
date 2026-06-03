@@ -34,13 +34,16 @@ P = {
     "nozzle_orifice_d": 5.8,
     "nozzle_straight_len": 5.0,
     "ght_pitch": 25.4 / 11.5,
-    "ght_major_d": 26.9,
-    "ght_minor_d": 23.8,
+    "ght_female_major_d": 27.4,
+    "ght_female_minor_d": 24.8,
     "ght_thread_len": 18.0,
     "ght_thread_overlap": 0.25,
-    "washer_face_d": 31.5,
+    "female_socket_od": 33.0,
+    "female_socket_len": 22.0,
+    "female_socket_chamfer_d": 29.0,
+    "washer_face_d": 30.5,
     "washer_face_t": 3.0,
-    "grip_hex_d": 35.0,
+    "grip_hex_d": 34.0,
     "grip_hex_t": 6.0,
     "feed_curve_c1": (66.0, 0.0, 22.0),
     "feed_curve_c2": (66.0, 0.0, 3.0),
@@ -52,7 +55,7 @@ P["mouth_outer_major"] = P["mouth_opening_major"] + (P["rim_wall"] * 2.0)
 P["mouth_outer_minor"] = P["mouth_opening_minor"] + (P["rim_wall"] * 2.0)
 P["barb_start"] = P["converge_len"] + P["throat_len"] + P["diffuser_len"]
 P["barb_pitch"] = P["barb_length"] / P["barb_count"]
-P["external_hose_len"] = P["washer_face_t"] + P["grip_hex_t"] + P["ght_thread_len"] + 8.0
+P["external_hose_len"] = P["washer_face_t"] + P["grip_hex_t"] + P["female_socket_len"]
 
 
 def v(pt):
@@ -228,21 +231,26 @@ def make_hose_connector_outer():
         .val()
     )
 
-    thread = make_male_ght_thread().rotate((0, 0, 0), (0, 1, 0), P["hose_axis_deg"]).translate(P["hose_junction"])
+    socket = (
+        cq.Workplane(plane)
+        .workplane(offset=P["washer_face_t"] + P["grip_hex_t"])
+        .circle(P["female_socket_od"] / 2.0)
+        .extrude(P["female_socket_len"])
+        .val()
+    )
 
-    return fuse_all([washer, hex_body, thread])
+    return fuse_all([washer, hex_body, socket])
 
 
-def make_male_ght_thread():
-    z0 = P["washer_face_t"] + P["grip_hex_t"]
-    root_r = P["ght_minor_d"] / 2.0
-    major_r = P["ght_major_d"] / 2.0
+def make_external_ght_thread_cutter(z0, major_d, minor_d, thread_len):
+    root_r = minor_d / 2.0
+    major_r = major_d / 2.0
     bead_r = ((major_r - root_r) + P["ght_thread_overlap"]) / 2.0
     helix_r = root_r + bead_r - P["ght_thread_overlap"]
     helix_start_z = z0 + bead_r
-    helix_height = P["ght_thread_len"] - (2.0 * bead_r)
+    helix_height = thread_len - (2.0 * bead_r)
 
-    root = cq.Solid.makeCylinder(root_r, P["ght_thread_len"], cq.Vector(0.0, 0.0, z0), cq.Vector(0.0, 0.0, 1.0))
+    root = cq.Solid.makeCylinder(root_r, thread_len, cq.Vector(0.0, 0.0, z0), cq.Vector(0.0, 0.0, 1.0))
     helix = cq.Wire.makeHelix(P["ght_pitch"], helix_height, helix_r, center=(0.0, 0.0, helix_start_z))
 
     tangent = (0.0, 2.0 * math.pi * helix_r, P["ght_pitch"])
@@ -251,15 +259,44 @@ def make_male_ght_thread():
 
     leadout = (
         cq.Workplane("XY")
-        .workplane(offset=z0 + P["ght_thread_len"])
-        .circle(P["ght_minor_d"] / 2.0)
+        .workplane(offset=z0 + thread_len)
+        .circle(minor_d / 2.0)
         .workplane(offset=1.3)
-        .circle((P["ght_minor_d"] - 1.2) / 2.0)
+        .circle((minor_d - 1.2) / 2.0)
         .loft(combine=True)
         .val()
     )
 
     return fuse_all([root, rib, leadout]).clean()
+
+
+def make_female_ght_socket_cut():
+    z0 = P["washer_face_t"] + P["grip_hex_t"]
+    socket_end = z0 + P["female_socket_len"]
+    thread_start = z0 + 1.0
+    thread_len = min(P["ght_thread_len"], P["female_socket_len"] - 2.0)
+
+    bore = cq.Solid.makeCylinder(
+        P["ght_female_minor_d"] / 2.0,
+        P["female_socket_len"] + 2.0,
+        cq.Vector(0.0, 0.0, z0 - 0.5),
+        cq.Vector(0.0, 0.0, 1.0),
+    )
+    thread = make_external_ght_thread_cutter(
+        thread_start,
+        P["ght_female_major_d"],
+        P["ght_female_minor_d"],
+        thread_len,
+    )
+    lead_in = cq.Solid.makeCone(
+        P["female_socket_chamfer_d"] / 2.0,
+        P["ght_female_minor_d"] / 2.0,
+        2.0,
+        cq.Vector(0.0, 0.0, socket_end - 1.2),
+        cq.Vector(0.0, 0.0, 1.0),
+    )
+
+    return fuse_all([bore, thread, lead_in]).clean().rotate((0, 0, 0), (0, 1, 0), P["hose_axis_deg"]).translate(P["hose_junction"])
 
 
 def make_venturi_outer():
@@ -322,6 +359,7 @@ def make_water_path_cut():
             P["nozzle_straight_len"] + 1.2,
         )
     )
+    solids.append(make_female_ght_socket_cut())
     return fuse_all(solids)
 
 

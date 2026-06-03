@@ -53,8 +53,8 @@ Recommended starting settings:
 PLA prototype 3MF:
 
 - `out/sand_vac_head_combined_smooth_vertical_PLA.3mf` is intended for a PLA prototype print in Bambu Studio.
-- It rotates the STEP-derived combined body upright, giving about a `77 x 85 mm` bed footprint and `218 mm` print height.
-- The embedded prototype preset uses `0.20 mm` baseline layers, variable layers down to `0.12 mm` near the hose-thread zone, `6` walls, `6` top/bottom layers, `30%` gyroid infill, tree/auto supports, and a `10 mm` brim.
+- It rotates the STEP-derived combined body upright, giving about an `82 x 85 mm` bed footprint and `218 mm` print height.
+- The embedded prototype preset uses `0.20 mm` baseline layers, variable layers down to `0.12 mm` near the hose-thread zone, `6` walls, `6` top/bottom layers, `30%` gyroid infill, supports disabled by default, and a `10 mm` brim.
 - It is a slicer project, not sliced G-code; it reuses the known-good Bambu project container layout and should be opened in Bambu Studio so you can confirm the selected printer, plate, and loaded PLA before printing.
 
 STEP/Fusion workflow:
@@ -67,7 +67,7 @@ STEP/Fusion workflow:
 
 Notes on fit and tuning:
 
-- The hose-side thread is a printable approximation of `3/4-11.5 GHT` with a `26.9 mm` major diameter, about `23.8 mm` root diameter, and an intentionally aggressive flat crest/groove so it is visible in PETG. It should be treated as a first-pass fit, not a guaranteed production thread.
+- The hose-side connector is now a female/internal printable approximation of `3/4-11.5 GHT` with a `33.0 mm` outer socket, about `24.8 mm` internal crest diameter, and about `27.4 mm` internal thread groove diameter. It should be treated as a first-pass fit, not a guaranteed production thread.
 - The nozzle orifice is parameterized with `nozzle_orifice_d_override`. Start with the `5.8 mm` recommended STL. If suction is weak, try `5.4 mm`. If flow is too restricted and your water supply is strong, try `6.2 mm`.
 - The exhaust barb is sized for nominal `1-1/4"` corrugated pool hose. Hose tolerances vary. If your hose is loose or tight, adjust `barb_peak_d` by about `0.5 mm`.
 - For reliable pressure handling, seal any visibly porous interior print surfaces with epoxy or polyurethane sealant.
@@ -91,7 +91,7 @@ What I based this on:
 Current design assumptions:
 
 - Exhaust hose: `1-1/4"` nominal
-- Garden hose connection: standard US female hose end screwing onto a male fitting on the injector
+- Garden hose connection: standard US male hose end screwing into a female fitting on the injector
 - Household water pressure: roughly `40-60 psi`
 
 Because eductor tools are sensitive to nozzle geometry, expect one tuning cycle after the first print. Three nozzle-size STL variants are included so the first test does not require editing the SCAD.

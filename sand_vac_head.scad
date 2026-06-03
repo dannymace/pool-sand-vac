@@ -53,17 +53,20 @@ nozzle_straight_len = 5.0;
 
 // Standard US garden hose thread, printable approximation.
 ght_pitch = 25.4 / 11.5;
-ght_major_d = 26.9;        // near 1.0625 in GHT male OD, with slight FDM clearance
-ght_minor_d = 23.8;        // deeper groove so PETG prints a visible usable thread
+ght_female_major_d = 27.4; // internal female GHT groove diameter
+ght_female_minor_d = 24.8; // internal female thread crest / tap-drill diameter
 ght_thread_depth = 1.45;
 ght_thread_root_overlap = 0.35; // fuses thread root into the connector body
 ght_thread_len = 18.0;
-washer_face_d = 31.5;
+female_socket_od = 33.0;
+female_socket_len = 22.0;
+female_socket_chamfer_d = 29.0;
+washer_face_d = 30.5;
 washer_face_t = 3.0;
-grip_hex_d = 35;
+grip_hex_d = 34;
 grip_hex_t = 6;
 
-external_hose_len = washer_face_t + grip_hex_t + ght_thread_len + 8;
+external_hose_len = washer_face_t + grip_hex_t + female_socket_len;
 
 feed_curve_steps = 5;
 feed_curve_start = [
@@ -243,20 +246,42 @@ module thread_helix(major_d, pitch, length, depth, root_overlap = 0) {
         ]);
 }
 
-module male_ght_thread() {
+module external_ght_thread_cutter(thread_start_z, major_d, minor_d, thread_len) {
     union() {
-        cylinder(h = ght_thread_len, d = ght_minor_d, center = false);
+        translate([0, 0, thread_start_z])
+            cylinder(h = thread_len, d = minor_d, center = false);
 
-        thread_helix(
-            major_d = ght_major_d,
-            pitch = ght_pitch,
-            length = ght_thread_len,
-            depth = ght_thread_depth,
-            root_overlap = ght_thread_root_overlap
+        translate([0, 0, thread_start_z])
+            thread_helix(
+                major_d = major_d,
+                pitch = ght_pitch,
+                length = thread_len,
+                depth = ght_thread_depth,
+                root_overlap = ght_thread_root_overlap
+            );
+
+        translate([0, 0, thread_start_z + thread_len])
+            cylinder(h = 1.3, d1 = minor_d, d2 = minor_d - 1.2, center = false);
+    }
+}
+
+module female_ght_socket_cut() {
+    z0 = washer_face_t + grip_hex_t;
+    socket_end = z0 + female_socket_len;
+
+    hose_axis() {
+        translate([0, 0, z0 - 0.5])
+            cylinder(h = female_socket_len + 2.0, d = ght_female_minor_d, center = false);
+
+        external_ght_thread_cutter(
+            z0 + 1.0,
+            ght_female_major_d,
+            ght_female_minor_d,
+            min(ght_thread_len, female_socket_len - 2.0)
         );
 
-        translate([0, 0, ght_thread_len])
-            cylinder(h = 1.3, d1 = ght_minor_d, d2 = ght_minor_d - 1.2, center = false);
+        translate([0, 0, socket_end - 1.2])
+            cylinder(h = 2.0, d1 = female_socket_chamfer_d, d2 = ght_female_minor_d, center = false);
     }
 }
 
@@ -269,7 +294,7 @@ module hose_connector_outer() {
             cylinder(h = grip_hex_t, d = grip_hex_d, $fn = 6, center = false);
 
         translate([0, 0, washer_face_t + grip_hex_t])
-            male_ght_thread();
+            cylinder(h = female_socket_len, d = female_socket_od, center = false);
     }
 }
 
@@ -319,6 +344,8 @@ module water_path_cuts() {
 
     translate([jet_exit_x - nozzle_straight_len, 0, jet_plenum[2]])
         x_taper(nozzle_straight_len + 1.2, nozzle_orifice_d, nozzle_orifice_d);
+
+    female_ght_socket_cut();
 }
 
 module head() {

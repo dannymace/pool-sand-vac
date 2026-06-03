@@ -32,6 +32,7 @@ Iteration review:
 | V5 | Tightened the hose-thread dimensions to a print-fit `26.9 mm` major diameter and corrected the Bambu 3MF PETG profile metadata | Keeps the visible printable thread while avoiding an oversized male fitting, and prevents the 3MF from importing with PLA temperatures. |
 | V6 | Disabled the bottom skid by default, changed the X1C 3MF to vertical mouth-down printing, and replaced the hard pressure-feed turn with a smoother curved feed | Removes the unwanted bottom plate, minimizes support needs, and makes the pressure-water path less abrupt. |
 | V7 | Deepened the garden-hose thread grooves while keeping the `26.9 mm` outside diameter | Makes the hose-thread form visibly present in Bambu Studio and more likely to survive PETG printing without making the male adapter oversized. |
+| V8 | Switched the pressure-water connector to a female/internal GHT socket and disabled supports in the PLA 3MF | Matches the prototype fit feedback: the hose now screws into the tool instead of over an external male thread, and support material is kept out of the internal threads. |
 
 Flow path check:
 
@@ -47,11 +48,12 @@ Flow path check:
 
 Garden-hose connection:
 
-- Thread form: printable approximation of straight `3/4-11.5 GHT/NH`.
+- Thread form: female/internal printable approximation of straight `3/4-11.5 GHT/NH`.
 - Pitch: `2.2087 mm`.
-- Mesh-measured major diameter: about `26.9 mm`, close to the common `1.0625 in.` / `27.0 mm` male GHT OD.
-- Mesh-measured root diameter: about `23.8 mm`.
-- Radial thread depth: about `1.6 mm`, with a wider flat crest for FDM survivability.
+- Socket outer diameter: `33.0 mm`.
+- Internal thread crest diameter: about `24.8 mm`.
+- Internal thread groove diameter: about `27.4 mm`.
+- Radial thread depth: about `1.4 mm`, with a wider flat crest/groove for FDM survivability.
 - Seal: relies on a real garden-hose washer, not thread taper.
 
 Nozzle options:
@@ -74,8 +76,8 @@ Printability review:
 - Do not use slicer auto-orient if it changes this mouth-down orientation; the intended 3MF bounds are about `85 x 78 x 180 mm`.
 - Use PETG, ASA, or ABS. Avoid PLA for hot sun and threaded hose stress.
 - Use at least `5` walls, `6` top/bottom layers, and `40-60%` infill.
-- The X1C 3MF is encoded for Bambu PETG Basic, `255 C` nozzle / `245 C` first layer, `70 C` textured PEI bed, `6` walls, `7` top/bottom layers, `45%` gyroid infill, `5 mm` brim, and supports disabled.
-- Avoid supports in the slurry path or water jet path. If support is required, use painted external support only.
+- The PLA 3MF is encoded for Bambu PLA Basic, `220 C` first layer / `215 C` print temperature, `6` walls, `6` top/bottom layers, `30%` gyroid infill, `10 mm` brim, and supports disabled.
+- Avoid supports in the slurry path, water jet path, and female hose-thread socket. If support is required, use painted external support only.
 - Seal the printed garden-hose thread and any visible layer porosity with epoxy or polyurethane if it leaks.
 - The old bottom skid is still available as `bottom_skid_enabled = true`, but the default model and X1C 3MF do not include it.
 
