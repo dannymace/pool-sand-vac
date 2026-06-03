@@ -67,7 +67,7 @@ STEP/Fusion workflow:
 
 Notes on fit and tuning:
 
-- The hose-side connector is now a female/internal printable approximation of `3/4-11.5 GHT` with a `33.0 mm` outer socket, about `24.8 mm` internal crest diameter, and about `27.4 mm` internal thread groove diameter. It should be treated as a first-pass fit, not a guaranteed production thread.
+- The hose-side connector is now a female/internal printable approximation of `3/4-11.5 GHT` with a `33.0 mm` outer socket, about `25.4 mm` internal crest diameter, and about `28.0 mm` internal thread groove diameter. It should be treated as a first-pass fit, not a guaranteed production thread.
 - The nozzle orifice is parameterized with `nozzle_orifice_d_override`. Start with the `5.8 mm` recommended STL. If suction is weak, try `5.4 mm`. If flow is too restricted and your water supply is strong, try `6.2 mm`.
 - The exhaust barb is sized for nominal `1-1/4"` corrugated pool hose. Hose tolerances vary. If your hose is loose or tight, adjust `barb_peak_d` by about `0.5 mm`.
 - For reliable pressure handling, seal any visibly porous interior print surfaces with epoxy or polyurethane sealant.

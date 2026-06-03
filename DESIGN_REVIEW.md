@@ -33,6 +33,7 @@ Iteration review:
 | V6 | Disabled the bottom skid by default, changed the X1C 3MF to vertical mouth-down printing, and replaced the hard pressure-feed turn with a smoother curved feed | Removes the unwanted bottom plate, minimizes support needs, and makes the pressure-water path less abrupt. |
 | V7 | Deepened the garden-hose thread grooves while keeping the `26.9 mm` outside diameter | Makes the hose-thread form visibly present in Bambu Studio and more likely to survive PETG printing without making the male adapter oversized. |
 | V8 | Switched the pressure-water connector to a female/internal GHT socket and disabled supports in the PLA 3MF | Matches the prototype fit feedback: the hose now screws into the tool instead of over an external male thread, and support material is kept out of the internal threads. |
+| V9 | Increased the female socket internal cut by `0.6 mm` diameter | Loosens the printed female threads after the first female-socket prototype was slightly too tight. |
 
 Flow path check:
 
@@ -51,8 +52,8 @@ Garden-hose connection:
 - Thread form: female/internal printable approximation of straight `3/4-11.5 GHT/NH`.
 - Pitch: `2.2087 mm`.
 - Socket outer diameter: `33.0 mm`.
-- Internal thread crest diameter: about `24.8 mm`.
-- Internal thread groove diameter: about `27.4 mm`.
+- Internal thread crest diameter: about `25.4 mm`.
+- Internal thread groove diameter: about `28.0 mm`.
 - Radial thread depth: about `1.4 mm`, with a wider flat crest/groove for FDM survivability.
 - Seal: relies on a real garden-hose washer, not thread taper.
 

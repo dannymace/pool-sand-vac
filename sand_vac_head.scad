@@ -53,14 +53,14 @@ nozzle_straight_len = 5.0;
 
 // Standard US garden hose thread, printable approximation.
 ght_pitch = 25.4 / 11.5;
-ght_female_major_d = 27.4; // internal female GHT groove diameter
-ght_female_minor_d = 24.8; // internal female thread crest / tap-drill diameter
+ght_female_major_d = 28.0; // internal female GHT groove diameter, loosened after prototype fit
+ght_female_minor_d = 25.4; // internal female thread crest / tap-drill diameter, loosened after prototype fit
 ght_thread_depth = 1.45;
 ght_thread_root_overlap = 0.35; // fuses thread root into the connector body
 ght_thread_len = 18.0;
 female_socket_od = 33.0;
 female_socket_len = 22.0;
-female_socket_chamfer_d = 29.0;
+female_socket_chamfer_d = 29.6;
 washer_face_d = 30.5;
 washer_face_t = 3.0;
 grip_hex_d = 34;
